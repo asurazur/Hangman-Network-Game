@@ -14,7 +14,7 @@ class Player():
         return self.ready
 
     def set_finished(self, finished):
-        self.guesses = finished
+        self.finished = finished
     
     def get_finished(self):
         return self.finished

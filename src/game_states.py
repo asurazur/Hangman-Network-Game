@@ -14,18 +14,18 @@ class StartState():
             self.clock.tick(60)
             self.handle_event(entity)
 
+            #Network Stuff
+            data = entity.load_data(entity.send_data())
+            entity.opponent = data.get_player()
+            opponentReady = entity.opponent.get_ready()
+            playerReady = entity.player.get_ready()
+
             #Display
             entity.canvas.draw_background()
             Hangman.prehangman(entity.canvas.get_canvas())
             message="waiting for opponent"
             entity.canvas.draw_text(message, 20, entity.width/2, entity.height/2)
             entity.canvas.update()
-
-            #Network Stuff
-            data:Request = entity.load_data(entity.send_data())
-            entity.opponent = data.get_player()
-            opponentReady = entity.opponent.get_ready()
-            playerReady = entity.player.get_ready()
 
             #Change Game State
             if (opponentReady and playerReady):
@@ -40,9 +40,6 @@ class StartState():
                 if event.type in (pygame.QUIT, pygame.K_ESCAPE):
                     self.loop = False
 
-class CountDownState():
-    pass
-
 
 class GameState():
     def __init__(self):
@@ -55,34 +52,34 @@ class GameState():
             #handle input
             self.handle_event(entity)
             
+            #Validate
+            is_player_match = (len(set(entity.word)) == entity.player.get_correct())
+            is_opp_match = (len(set(entity.word)) == entity.player.get_correct())
+            opponent_lose = entity.opponent.is_lose()
+            player_lose = entity.player.is_lose()
+            if is_player_match or opponent_lose:
+                entity.player.set_finished(True)
+            elif is_opp_match or player_lose:
+                entity.opponent.set_finished(True)
+            # Network Stuff
+            data = entity.load_data(entity.send_data())
+            entity.opponent = data.get_player()
+
+            print("You:", str(entity.player))
+            print("Enemy:", str(entity.opponent))
+
             # Update Canvas
             entity.canvas.draw_background()
             Hangman.draw(entity.player.get_wrong(), entity.canvas.get_canvas())
-            entity.canvas.draw_text(entity.hidden, 20, entity.width/2, entity.height/2)
             entity.canvas.update()
-            
-            # Network Stuff
-            data:Request = entity.load_data(entity.send_data())
-            entity.opponent = data.get_player()
-            #Update Attributes
-            print(entity.player)
-            print(entity.opponent)
-            print(set(entity.word))
-            print(entity.player.get_correct_chars())
 
+            #Update Attributes
             #Player Wins if, word = correct_chars OR opponent Lose
-            is_player_match = (set(entity.word) == entity.player.get_correct_chars())
-            is_opp_match = (set(entity.word) == entity.opponent.get_correct_chars())
-            if is_player_match or entity.opponent.is_lose():
-                entity.player.set_finished(True)
+            if entity.player.get_finished() or entity.opponent.get_finished():
+                self.loop = False
                 entity.game_state.change_state(EndState())
                 entity.run()
-            elif is_opp_match or entity.player.is_lose():
-                entity.opponent.set_finished(True)
-                entity.game_state.change_state(EndState())
-                entity.run()
-            else:
-                continue
+                    
 
     def handle_event(self, entity):
          for event in pygame.event.get():
@@ -110,15 +107,21 @@ class EndState():
             self.clock.tick(60)
             #handle input
             self.handle_event(entity)
-            if(entity.player.get_finished()):
-                print("You Win")
-            else:
-                print("You Lose")
+
+            # Network Stuff
+            data = entity.load_data(entity.send_data())
+            entity.opponent = data.get_player()
+
             # Update Canvas
             entity.canvas.draw_background()
-            Hangman.draw(entity.player.get_wrong(), entity.canvas.get_canvas())
-            entity.canvas.draw_text(entity.hidden, 20, entity.width/2, entity.height/2)
+            if entity.player.get_finished():
+                entity.canvas.draw_text("You Win", 50, entity.width/2 -100, entity.height/2)
+            else:
+                entity.canvas.draw_text("You Lose", 50, entity.width/2 -100, entity.height/2)
             entity.canvas.update()
+
+
+
 
     def handle_event(self, entity):
         for event in pygame.event.get():

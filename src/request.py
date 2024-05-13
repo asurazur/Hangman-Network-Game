@@ -23,6 +23,3 @@ class Request:
     def set_guess(self, word, category):
         self.word = word
         self.category = category
-
-    def __str__(self):
-        return f""

@@ -66,7 +66,6 @@ class Network:
                     request:Request = pickle.loads(data)
                     player:Player = request.get_player()
                     id:int = request.get_net_id()
-                    ready:bool = player.get_ready()
                     Network.states[id].set_player(player)
                     if id == 0: nid = 1
                     if id == 1: nid = 0
