@@ -65,12 +65,16 @@ class GameState():
             data = entity.load_data(entity.send_data())
             entity.opponent = data.get_player()
 
+            #Log
             print("You:", str(entity.player))
             print("Enemy:", str(entity.opponent))
 
             # Update Canvas
             entity.canvas.draw_background()
             Hangman.draw(entity.player.get_wrong(), entity.canvas.get_canvas())
+            entity.hidden = GameState.parse_hidden(entity.word, entity.player.get_correct_chars())
+            entity.canvas.draw_text(entity.hidden, 50, entity.width/2 + 75 , entity.height/2)
+            entity.canvas.draw_text(entity.category, 38, entity.width/2 + 75, entity.height/2 + 50)
             entity.canvas.update()
 
             #Update Attributes
@@ -80,6 +84,19 @@ class GameState():
                 entity.game_state.change_state(EndState())
                 entity.run()
                     
+    @staticmethod
+    def parse_hidden(word: str, chars: set) -> str:
+        """
+        example:
+            hidden = ''
+            word = 'pizza'
+            chars = ('p', 'z')
+        
+        """
+        hidden = [i if i in chars  else '-' for i in word]
+        return ''.join(hidden)
+
+
 
     def handle_event(self, entity):
          for event in pygame.event.get():
@@ -115,12 +132,10 @@ class EndState():
             # Update Canvas
             entity.canvas.draw_background()
             if entity.player.get_finished():
-                entity.canvas.draw_text("You Win", 50, entity.width/2 -100, entity.height/2)
+                entity.canvas.draw_text("You Win", 50, entity.width/2 -75, entity.height/2)
             else:
-                entity.canvas.draw_text("You Lose", 50, entity.width/2 -100, entity.height/2)
+                entity.canvas.draw_text("You Lose", 50, entity.width/2 -75, entity.height/2)
             entity.canvas.update()
-
-
 
 
     def handle_event(self, entity):
