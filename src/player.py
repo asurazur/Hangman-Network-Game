@@ -13,14 +13,23 @@ class Player():
     def get_ready(self):
         return self.ready
 
-    def get_finished(self):
-        return self.finished
-    
     def set_finished(self, finished):
         self.guesses = finished
     
+    def get_finished(self):
+        return self.finished
+    
     def add_correct(self, char):
         self.correct_chars.add(char)
+
+    def get_correct_chars(self):
+        return self.correct_chars
+
+    def add_wrong(self, char):
+        self.wrong_chars.add(char)
+
+    def get_wrong_chars(self):
+        return self.wrong_chars
 
     def get_correct(self):
         return len(self.correct_chars)
@@ -28,6 +37,8 @@ class Player():
     def get_wrong(self):
         return len(self.wrong_chars)
 
+    def is_lose(self):
+        return True if len(self.wrong_chars) >= 11 else False
+
     def __str__(self):
         return f"Ready: {self.get_ready()} | Finished: {self.get_finished()} | Correct: {self.get_correct()} | Wrong: {self.get_wrong()}"
-    

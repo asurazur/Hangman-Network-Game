@@ -14,6 +14,7 @@ class Game:
         self.height = h
         self.word = ''
         self.category = ''
+        self.hidden = ''
         self.player = Player()
         self.opponent = Player()
         self.canvas = Canvas(self.width, self.height, "Guess Word")

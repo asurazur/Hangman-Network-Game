@@ -52,13 +52,12 @@ class Network:
         while True:
             try:
                 if Network.generate_word:
-                    try:
-                        word, category = Network.generate_word()
-                        Network.states[0].set_guess(word, category)
-                        Network.states[1].set_guess(word, category)
-                        Network.generate_word = False
-                    except Exception as e:
-                        print(str(e))
+                    word, category = Network.generate_word()
+                    Network.states[0].set_guess(word, category)
+                    Network.states[1].set_guess(word, category)
+                    Network.generate_word = False
+                    print(word, category)
+                    print(set(word.upper()))
                 data = conn.recv(2048)
                 if not data:
                     conn.send(str.encode("Goodbye"))
@@ -69,7 +68,6 @@ class Network:
                     id:int = request.get_net_id()
                     ready:bool = player.get_ready()
                     Network.states[id].set_player(player)
-                    print(f"ID: {id}, ready: {ready}")
                     if id == 0: nid = 1
                     if id == 1: nid = 0
                     reply = pickle.dumps(Network.states[nid])
