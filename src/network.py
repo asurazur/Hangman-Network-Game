@@ -1,9 +1,24 @@
 import socket
 import pickle
+import json
+import random
+import time
+import os
 from .request import Request
 from .player import Player
 
+
 class Network:
+    random.seed(time.time())
+    currentId = "0"
+    generate_word = True
+    states = [Request(0, '', '', Player()), Request(1, '', '', Player())]
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    json_file_path = os.path.join(current_dir, "words.json")
+    with open(json_file_path, "r") as f:
+        words = json.load(f)
+
+
     def __init__(self, host, port):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.host = host # For this to work on your machine this must be equal to the ipv4 address of the machine running the server
@@ -30,14 +45,20 @@ class Network:
         except socket.error as e:
             return str(e)
         
-    currentId = "0"
-    states = [Request(0, Player()), Request(1, Player())]
     @staticmethod
     def threaded_client(conn):
         conn.send(str.encode(Network.currentId))
         Network.currentId = "1"
         while True:
             try:
+                if Network.generate_word:
+                    try:
+                        word, category = Network.generate_word()
+                        Network.states[0].set_guess(word, category)
+                        Network.states[1].set_guess(word, category)
+                        Network.generate_word = False
+                    except Exception as e:
+                        print(str(e))
                 data = conn.recv(2048)
                 if not data:
                     conn.send(str.encode("Goodbye"))
@@ -47,21 +68,28 @@ class Network:
                     player:Player = request.get_player()
                     id:int = request.get_net_id()
                     ready:bool = player.get_ready()
-                    try:
-                        Network.states[id] = Request(id, player)
-                    except Exception as e:
-                        print(str(e))
+                    Network.states[id].set_player(player)
                     print(f"ID: {id}, ready: {ready}")
                     if id == 0: nid = 1
                     if id == 1: nid = 0
-                try:
                     reply = pickle.dumps(Network.states[nid])
                     conn.sendall(reply)
-                except Exception as e:
-                    print(str(e))
             except:
                 print("An Error has Occurred")
                 break
 
         print("Connection Closed")
         conn.close()
+    
+    @staticmethod
+    def generate_word() -> tuple[str, str]:
+        """
+        Returns a random word with its category
+        :return: tuple[str, str]
+        """
+        
+        categories = list(Network.words.keys())
+        category = random.choice(categories)
+        words = list(Network.words[category])
+        word = random.choice(words)
+        return (word, category)

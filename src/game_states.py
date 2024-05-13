@@ -1,4 +1,5 @@
 import pygame
+import json
 from src.hangman import Hangman
 from src.request import Request
 
@@ -17,7 +18,7 @@ class StartState():
             entity.canvas.draw_background()
             Hangman.prehangman(entity.canvas.get_canvas())
             message="waiting for opponent"
-            entity.canvas.draw_text(message, 20, entity.width/2 -len(message)*2.5, entity.height/2)
+            entity.canvas.draw_text(message, 20, entity.width/2, entity.height/2)
             entity.canvas.update()
 
             #Network Stuff
@@ -29,11 +30,16 @@ class StartState():
             #Change Game State
             if (opponentReady and playerReady):
                 run=False
+                entity.word = data.get_word()
+                entity.category = data.get_category()
+                print(entity.word)
+                print(entity.category)
                 entity.game_state.change_state(GameState())
                 entity.run()
 
 class CountDownState():
     pass
+
 
 class GameState():
     def run(self,entity):
@@ -49,15 +55,18 @@ class GameState():
 
             #handle input
 
+
+
             # Update Canvas
-            entity.canvas.draw_text("In Game", 20, 0, 0)
             entity.canvas.draw_background()
+            Hangman.draw(entity.player.get_wrong(), entity.canvas.get_canvas())
+            entity.canvas.draw_text("In Game", 20, entity.width/2, entity.height/2)
             entity.canvas.update()
             
-            # Send Network Stuff
+            # Network Stuff
             # data = entity.load_data(entity.send_data())
             #Update Attributes
-            
+        
 
 class EndState():
     pass
