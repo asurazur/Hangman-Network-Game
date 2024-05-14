@@ -3,13 +3,13 @@ from _thread import *
 from src.network import Network
 import sys
 
-if len(sys.argv) != 2:
-    print("Usage: python server.py <port_no>")
+if len(sys.argv) != 3:
+    print("Usage: python server.py <ip_addr> <port_no>")
     exit()
 count_client = 0
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server = 'localhost'
-port = int(sys.argv[1])
+server = sys.argv[1]
+port = int(sys.argv[2])
 server_ip = socket.gethostbyname(server)
 try:
     s.bind((server, port))
