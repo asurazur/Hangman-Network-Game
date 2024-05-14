@@ -1,6 +1,6 @@
 import pygame
 import json
-from src.hangman import Hangman
+from src.hangman import *
 from src.request import Request
 
 class StartState():
@@ -9,6 +9,8 @@ class StartState():
         self.loop = True
 
     def run(self, entity):
+        pygame.mixer.music.load('src/Music/KM/Two Finger Johnny.mp3')
+        pygame.mixer.music.play()
         entity.player.set_ready(True)
         while self.loop:
             self.clock.tick(60)
@@ -24,7 +26,7 @@ class StartState():
             entity.canvas.draw_background()
             Hangman.prehangman(entity.canvas.get_canvas())
             message="waiting for opponent"
-            entity.canvas.draw_text(message, 20, entity.width/2, entity.height/2)
+            entity.canvas.draw_text(message, 30, entity.width/2 -25, entity.height/2)
             entity.canvas.update()
 
             #Change Game State
@@ -73,7 +75,7 @@ class GameState():
             entity.canvas.draw_background()
             Hangman.draw(entity.player.get_wrong(), entity.canvas.get_canvas())
             entity.hidden = GameState.parse_hidden(entity.word, entity.player.get_correct_chars())
-            entity.canvas.draw_text(entity.hidden, 50, entity.width/2 + 75 , entity.height/2)
+            entity.canvas.draw_text(entity.hidden.upper(), 50, entity.width/2 + 75 , entity.height/2)
             entity.canvas.draw_text(entity.category, 38, entity.width/2 + 75, entity.height/2 + 50)
             entity.canvas.update()
 
@@ -104,6 +106,7 @@ class GameState():
                     self.loop = False
 
                 if event.type == pygame.KEYDOWN:
+                    pygame.mixer.Sound('src/Music/Keyboard.wav').play()
                     try:
                         char = chr(event.key).lower()
                         word = entity.word.lower()
@@ -118,8 +121,11 @@ class EndState():
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.loop = True
+        
 
     def run(self,entity):
+        pygame.mixer.music.stop()
+        pygame.mixer.Sound('src/Music/KM/Loping Sting.mp3').play()
         while self.loop:
             self.clock.tick(60)
             #handle input
@@ -132,9 +138,12 @@ class EndState():
             # Update Canvas
             entity.canvas.draw_background()
             if entity.player.get_finished():
-                entity.canvas.draw_text("You Win", 50, entity.width/2 -75, entity.height/2)
+                entity.canvas.draw_text("You Win", 50, entity.width/2 -60, entity.height/2 -70, GREEN)
             else:
-                entity.canvas.draw_text("You Lose", 50, entity.width/2 -75, entity.height/2)
+                entity.canvas.draw_text("You Lose", 50, entity.width/2 -60, entity.height/2 -70, RED)
+
+            entity.canvas.draw_text("The Word Is", 50, entity.width/2 -75, entity.height/2 -35)
+            entity.canvas.draw_text("\""+ entity.word.upper() + "\"", 50, entity.width/2 -69, entity.height/2)
             entity.canvas.update()
 
 

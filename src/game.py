@@ -9,6 +9,7 @@ from src.request import Request
 
 class Game:
     def __init__(self, w, h, host, port):
+        pygame.mixer.init()
         self.net = Network(host, port)
         self.width = w
         self.height = h

@@ -12,10 +12,10 @@ class Canvas:
     def update():
         pygame.display.update()
 
-    def draw_text(self, text, size, x, y):
+    def draw_text(self, text, size, x, y, color=(0,0,0)):
         pygame.font.init()
         font = pygame.font.SysFont("comicsans", size)
-        render = font.render(text, 1, (0,0,0))
+        render = font.render(text, 1, color)
         self.screen.blit(render, (x,y))
 
     def get_canvas(self):

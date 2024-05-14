@@ -10,6 +10,17 @@ GREY = (200,200,200)
 class Hangman:
     @staticmethod
     def draw(condition, surface):
+
+        if condition == 11:
+            pygame.draw.line(surface, BLUE, (10,400),(300,400),8)#baselineDisplay
+            pygame.draw.circle(surface, BLUE, (150,150),50,8)#head
+            pygame.draw.line(surface, BLUE, (150,200),(150,300),8)#body
+            pygame.draw.line(surface, BLUE, (150,210),(100,250),8)#lefthand
+            pygame.draw.line(surface, BLUE, (150,210),(200,250),8)#righthand
+            pygame.draw.line(surface, BLUE, (150,300),(100,350),8)#leftleg
+            pygame.draw.line(surface, BLUE, (150,300),(200,350),8)#rightleg
+            return
+
         for i in range(condition+1):
             if i == 0:
                 pygame.draw.line(surface, GREY, (10,400),(300,400),8)#baseline
@@ -52,16 +63,6 @@ class Hangman:
 
             elif i == 10:
                 pygame.draw.line(surface, BLACK, (150,300),(200,350),8)#rightleg
-
-            #game over
-            elif i == 11:
-                pygame.draw.line(surface, BLUE, (10,400),(300,400),8)#baselineDisplay
-                pygame.draw.circle(surface, BLUE, (150,150),50,8)#head
-                pygame.draw.line(surface, BLUE, (150,200),(150,300),8)#body
-                pygame.draw.line(surface, BLUE, (150,210),(100,250),8)#lefthand
-                pygame.draw.line(surface, BLUE, (150,210),(200,250),8)#righthand
-                pygame.draw.line(surface, BLUE, (150,300),(100,350),8)#leftleg
-                pygame.draw.line(surface, BLUE, (150,300),(200,350),8)#rightleg
 
     @staticmethod
     def prehangman(surface):
